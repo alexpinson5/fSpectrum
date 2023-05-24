@@ -5,16 +5,17 @@ import tkinter as tk
 from check_connection import check_internet_connection
 from update_data import log_true, log_false
 
-#def start_button_clicked():
-#    print("Start button clicked!")
+def start_button_clicked():
+    print("Start button clicked!")
 
-#window = tk.Tk()
-#window.title("My App")
+window = tk.Tk()
+window.title("fSpectrum")
+window.geometry("500x300")
 
-#start_button = tk.Button(window, text="Start", command=start_button_clicked)
-#start_button.pack()
+start_button = tk.Button(window, text="Start", command=start_button_clicked)
+start_button.pack()
 
-#window.mainloop()
+window.mainloop()
 
 if check_internet_connection():
     print("Internet is connected!")
