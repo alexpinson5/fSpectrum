@@ -7,12 +7,3 @@ def check_internet_connection():
         return True
     except requests.ConnectionError:
         return False
-
-# Call the function to check internet connectivity
-is_connected = check_internet_connection()
-
-# Print the result
-if is_connected:
-    print("Internet is connected!")
-else:
-    print("No internet connection.")

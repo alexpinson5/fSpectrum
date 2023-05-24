@@ -1,12 +1,24 @@
+# Import necessary libraries
 import tkinter as tk
 
-def start_button_clicked():
-    print("Start button clicked!")
+# Import files & functions
+from check_connection import check_internet_connection
+from update_data import log_true, log_false
 
-window = tk.Tk()
-window.title("My App")
+#def start_button_clicked():
+#    print("Start button clicked!")
 
-start_button = tk.Button(window, text="Start", command=start_button_clicked)
-start_button.pack()
+#window = tk.Tk()
+#window.title("My App")
 
-window.mainloop()
+#start_button = tk.Button(window, text="Start", command=start_button_clicked)
+#start_button.pack()
+
+#window.mainloop()
+
+if check_internet_connection():
+    print("Internet is connected!")
+    log_true()
+else:
+    print("No internet connection.")
+    log_false()
