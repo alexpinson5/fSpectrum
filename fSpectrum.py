@@ -8,12 +8,12 @@
 # -----------------------------------------------------------------------------
 
 # ----- IMPORT LIBRARIES ------------------------------------------------------
-import tkinter as tk
+import tkinter as tk # for GUI
 from tkinter import *
 
 # ----- IMPORT FILES/FUNCTIONS ------------------------------------------------
 from check_connection import check_internet_connection
-from update_data import log_true, log_false
+from update_data import *
 
 # ----- GLOBAL VARIABLES/CONSTANTS --------------------------------------------
 sliderVal = 15 # this is the initial slider value
@@ -64,7 +64,7 @@ def run_function():
 
 runningFlag = False
 
-# ----- TKINTER FORMATTING -----
+# ----- TKINTER FORMATTING ----------------------------------------------------
 # create window
 window = tk.Tk()
 window.title("fSpectrum")
@@ -90,6 +90,10 @@ canvas.pack()
 start_button = tk.Button(window, text=btnLabel, command=start_function)
 start_button.pack()
 
-# run once on startup to kick things off, then run the window loop
+# before the mainloop, display data
+print_entries_from_pickle()
+
+# run once on startup to kick things off
 start_function()
+
 window.mainloop()

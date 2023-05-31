@@ -44,3 +44,27 @@ def log_false():
         pickle.dump(existing_data, file)
 
     print("Entry added successfully.")
+
+def print_entries_from_pickle():
+    try:
+        with open("data.pickle", "rb") as file:
+            entries = pickle.load(file)
+
+        if isinstance(entries, list):
+            print("Datetime\t\t\tConnection")
+            print("-----------------------------------------")
+            for entry in entries:
+                if isinstance(entry, dict):
+                    datetime_str = entry.get("datetime", "")
+                    connection = entry.get("connection", False)
+
+                    if isinstance(datetime_str, str):
+                        print(f"{datetime_str}\t{connection}")
+                    else:
+                        print("Invalid datetime format in pickle file.")
+                else:
+                    print("Invalid entry format in pickle file.")
+        else:
+            print("Invalid data format in pickle file.")
+    except FileNotFoundError:
+        print("Pickle file not found.")
