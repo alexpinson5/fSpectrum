@@ -1,5 +1,6 @@
 import pickle
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 def log_true():
     # Prepare the data for insertion
@@ -48,23 +49,14 @@ def log_false():
 def print_entries_from_pickle():
     try:
         with open("data.pickle", "rb") as file:
-            entries = pickle.load(file)
-
-        if isinstance(entries, list):
-            print("Datetime\t\t\tConnection")
-            print("-----------------------------------------")
-            for entry in entries:
-                if isinstance(entry, dict):
-                    datetime_str = entry.get("datetime", "")
-                    connection = entry.get("connection", False)
-
-                    if isinstance(datetime_str, str):
-                        print(f"{datetime_str}\t{connection}")
-                    else:
-                        print("Invalid datetime format in pickle file.")
-                else:
-                    print("Invalid entry format in pickle file.")
-        else:
-            print("Invalid data format in pickle file.")
+            data = pickle.load(file)
+        if isinstance(data, str):  # Check if data is a string
+            data = []  # Initialize as an empty list
     except FileNotFoundError:
-        print("Pickle file not found.")
+        data = []
+
+    # Print the entries
+    #for entry in data:
+        #print(entry)
+
+    return data

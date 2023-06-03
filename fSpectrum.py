@@ -10,6 +10,10 @@
 # ----- IMPORT LIBRARIES ------------------------------------------------------
 import tkinter as tk # for GUI
 from tkinter import *
+from datetime import datetime
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import pickle
 
 # ----- IMPORT FILES/FUNCTIONS ------------------------------------------------
 from check_connection import check_internet_connection
@@ -56,11 +60,47 @@ def run_function():
         if check_internet_connection():
             print("Internet is connected!")
             log_true()
+            canvas.itemconfig(statusText, text="internet status: OK as of " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            canvas.configure(bg='#7fb57f')
         else:
             print("No internet connection.")
             log_false()
+            canvas.itemconfig(statusText, text="internet status: DOWN as of " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            canvas.configure(bg='#d16262')
+        #plot_line_graph()
         # Schedule the function to run again after X minutes (60000 milliseconds = 1 minute)
         window.after(sliderVal*60*1000, run_function)
+        
+def plot_line_graph():
+    data = print_entries_from_pickle()
+
+    # Extract datetime and status from data
+    datetimes = []
+    statuses = []
+    for entry in data:
+        if isinstance(entry, dict):  # Check if entry is a dictionary
+            datetimes.append(entry.get("datetime"))
+            statuses.append(entry.get("connection"))
+
+    # Convert datetimes to matplotlib-compatible format
+    datetimes = [datetime.strptime(dt, "%Y-%m-%d %H:%M:%S") for dt in datetimes]
+
+    # Create a new figure and plot the line graph
+    fig = plt.figure(figsize=(6, 4), dpi=100, facecolor="#f0f0f0")
+    plt.plot(datetimes, statuses)
+    plt.title("uptime")
+    plt.xlabel("date & time")
+    plt.ylabel("status")
+    plt.xticks(rotation=90)
+    plt.subplots_adjust(bottom=0.4)
+    
+    
+    # Create a Tkinter canvas and display the figure on it
+    canvas = FigureCanvasTkAgg(fig, master=window)
+    canvas.draw()
+
+    # Place the canvas in the tkinter window
+    canvas.get_tk_widget().pack()
 
 runningFlag = False
 
@@ -68,12 +108,12 @@ runningFlag = False
 # create window
 window = tk.Tk()
 window.title("fSpectrum")
-window.geometry("500x300")
+window.geometry("500x700")
 
 # header text 
 canvas = Canvas(window, width= 500, height= 60)
 canvas.create_text(250, 15, text="fSpectrum", fill="black", font=('Helvetica 15 bold'))
-canvas.create_text(250, 30, text="by alex pinson", fill="black", font=('Helvetica 8'))
+#canvas.create_text(250, 30, text="by alex pinson", fill="black", font=('Helvetica 8'))
 canvas.pack()
 canvas = Canvas(window, width= 500, height= 16) # spacer
 
@@ -90,8 +130,18 @@ canvas.pack()
 start_button = tk.Button(window, text=btnLabel, command=start_function)
 start_button.pack()
 
-# before the mainloop, display data
-print_entries_from_pickle()
+# status indicator
+canvas = Canvas(window, width= 300, height= 16, bg="#cc3333")
+statusText = canvas.create_text(150, 10, text="internet status: ", fill="white", font=('Helvetica 10 bold'))
+canvas.pack()
+
+# ----- DATA VISUALIZATION ----------------------------------------------------
+# header
+canvas2 = Canvas(window, width= 500, height= 20)
+canvas2.pack()
+
+# Plot line graph
+plot_line_graph()
 
 # run once on startup to kick things off
 start_function()
