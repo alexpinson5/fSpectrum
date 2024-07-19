@@ -6,6 +6,10 @@ This Python app uses a simple GET request to a 'likely-up' URL, logging the resp
 
 Test frequency can be set via a slider input from 1 to 120 minutes. A plot is generated based on previous data and setting a datetime range via two text inputs (a drop-down select provides quick presets). This graph will be updated dynamically as new datapoints are added.
 
+After a months-long fight with a certain internet provider (can you guess who...?), I turned to Python to create a lite uptime checker which would allow me to provably show my ISP that my frequent dropped connection issues were happening at the modem or outside of my house. Since the connection status is stored locally, running this on multiple machines with various connection methods allows comparing the connection status for a point of failure. After a year of having the issue fixed (it was a bad port at the pole) I am now rehashing this fight with the ISP and have dusted off my janky uptime checker for some improvements.
+
+My experience is primarily in web-application design, so getting up to speed with Python and the necesary packages required some help from ChatGPT.
+
 ### Dependencies
 * Tested on Windows 10 & Windows 11, Python v3.10+
 
