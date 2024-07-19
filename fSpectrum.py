@@ -26,6 +26,7 @@ from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import numpy as np
 import pickle
 
 # ----- IMPORT FILES/FUNCTIONS ------------------------------------------------
@@ -160,6 +161,11 @@ def plot_line_graph():
     # Adjust layout to prevent the dates from being cut off
     fig.tight_layout(rect=[0, 0.1, 1, 1])
 
+    # Set y-axis limits and labels
+    ax.set_ylim(-0.25, 1.25)
+    ax.set_yticks([0, 1])
+    ax.set_yticklabels(['down', 'up'])
+
     # Update the Tkinter canvas with the new figure
     fig_canvas.draw()
 
@@ -186,21 +192,21 @@ def print_entries_from_pickle():
 # Function to set datetime fields based on the selected option
 def set_datetime_fields(*args):
     now = datetime.now()
-    if time_range_var.get() == "Last Hour":
+    if time_range_var.get() == "last hour":
         start_time = now - timedelta(hours=1)
-    elif time_range_var.get() == "Last 12 Hours":
+    elif time_range_var.get() == "last 12 hours":
         start_time = now - timedelta(hours=12)
-    elif time_range_var.get() == "Last Day":
+    elif time_range_var.get() == "last day":
         start_time = now - timedelta(days=1)
-    elif time_range_var.get() == "Last Week":
+    elif time_range_var.get() == "last week":
         start_time = now - timedelta(weeks=1)
-    elif time_range_var.get() == "Last Month":
+    elif time_range_var.get() == "last month":
         start_time = now - timedelta(days=30)
-    elif time_range_var.get() == "Last Quarter":
+    elif time_range_var.get() == "last quarter":
         start_time = now - timedelta(days=90)
-    elif time_range_var.get() == "Last Year":
+    elif time_range_var.get() == "last year":
         start_time = now - timedelta(days=365)
-    elif time_range_var.get() == "All Time":
+    elif time_range_var.get() == "all time":
         start_time = datetime.min
     else:
         return
