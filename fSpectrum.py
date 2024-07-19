@@ -321,29 +321,29 @@ datetime_frame.pack()
 
 # Drop-down menu for time range options
 time_range_var = StringVar(window)
-time_range_options = ["Last Hour", "Last 12 Hours", "Last Day", "Last Week", "Last Month", "Last Quarter", "Last Year", "All Time"]
-time_range_var.set("Last Week")  # Default value
-time_range_label = Label(datetime_frame, text="Quick Presets:", font=('Helvetica 10 bold'))
+time_range_options = ["last hour", "last 12 hours", "last day", "last week", "last month", "last quarter", "last year", "all time"]
+time_range_var.set("last week")  # Default value
+time_range_label = Label(datetime_frame, text="quick presets:", font=('Helvetica 10 bold'))
 time_range_label.grid(row=0, column=0, sticky=E)
 time_range_menu = ttk.OptionMenu(datetime_frame, time_range_var, time_range_var.get(), *time_range_options, command=set_datetime_fields)
 time_range_menu.grid(row=0, column=1, padx=10, pady=5, sticky=W)
 
 # Start datetime selector
-start_datetime_label = Label(datetime_frame, text="Start Datetime (YYYY-MM-DD HH:MM:SS):", font=('Helvetica 10 bold'))
+start_datetime_label = Label(datetime_frame, text="start datetime (YYYY-MM-DD HH:MM:SS):", font=('Helvetica 10 bold'))
 start_datetime_label.grid(row=1, column=0, sticky=E)
 start_datetime_entry = ttk.Entry(datetime_frame)
 start_datetime_entry.grid(row=1, column=1, padx=10, pady=5)
 start_datetime_entry.insert(0, last_accepted_start)
 
 # End datetime selector
-end_datetime_label = Label(datetime_frame, text="End Datetime (YYYY-MM-DD HH:MM:SS) or 'current time':", font=('Helvetica 10 bold'))
+end_datetime_label = Label(datetime_frame, text="end datetime (YYYY-MM-DD HH:MM:SS) or 'current time':", font=('Helvetica 10 bold'))
 end_datetime_label.grid(row=2, column=0, sticky=E)
 end_datetime_entry = ttk.Entry(datetime_frame)
 end_datetime_entry.grid(row=2, column=1, padx=10, pady=5)
 end_datetime_entry.insert(0, last_accepted_end)
 
 # Update plot button
-update_button = tk.Button(datetime_frame, text="Update Plot", command=validate_and_plot)
+update_button = tk.Button(datetime_frame, text="update plot", command=validate_and_plot)
 update_button.grid(row=3, column=1, padx=10, pady=10, sticky=E)
 
 # Plot line graph
