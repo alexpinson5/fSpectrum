@@ -14,6 +14,7 @@ Packages used:
 * datetime
 * matplotlib
 * pickle
+* numpy
 
 (note that this program checks for installed packages and will install the necessary packages if they are not found)
 
