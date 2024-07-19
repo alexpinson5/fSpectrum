@@ -7,7 +7,17 @@
 #
 # -----------------------------------------------------------------------------
 
-# ----- IMPORT LIBRARIES ------------------------------------------------------
+# ----- IMPORT PACKAGES ------------------------------------------------------
+from package_checker import check_and_install_packages #import package checker file
+
+packages = [
+    "tkinter", 
+    "datetime", 
+    "matplotlib", 
+    "pickle"
+]
+check_and_install_packages(packages)
+
 import tkinter as tk # for GUI
 from tkinter import *
 from datetime import datetime
