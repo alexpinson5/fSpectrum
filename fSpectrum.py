@@ -21,6 +21,7 @@ check_and_install_packages(packages)
 import tkinter as tk  # for GUI
 from tkinter import *
 from tkinter import ttk
+from tkinter.scrolledtext import ScrolledText
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -35,6 +36,10 @@ from update_data import *
 sliderVal = 15  # this is the initial slider value
 btnLabel = "running... click to stop"
 stopStart = 0  # tracks how many button presses, only really relevant when 0
+faultsNo = 0 # tracks the number of faults detected in the set time period
+uptimePercent = 0.0 # keeps track of the uptime percentage over a selected time period
+last_accepted_start = (datetime.now() - timedelta(weeks=1)).strftime("%Y-%m-%d %H:%M:%S") #initializes the datetime to start plotting
+last_accepted_end = "current time" #initializes the datetime to stop plotting
 
 # ----- FUNCTION DEFINITIONS --------------------------------------------------
 # gets the value of the slider input, stops the main function if it is running
@@ -85,6 +90,7 @@ def run_function():
         window.after(sliderVal*60*1000, run_function)
 
 def plot_line_graph():
+    global faultsNo, uptimePercent
     data = print_entries_from_pickle()
 
     # Extract datetime and status from data
@@ -104,10 +110,39 @@ def plot_line_graph():
     
     filtered_datetimes = []
     filtered_statuses = []
+    fault_times = []
     for dt, status in zip(datetimes, statuses):
         if start_datetime <= dt <= end_datetime:
             filtered_datetimes.append(dt)
             filtered_statuses.append(status)
+            if status == 0:
+                fault_times.append(dt.strftime("%Y-%m-%d %H:%M:%S"))
+
+    # calculate the number of faults in this time period
+    faultsNo = len(fault_times)
+
+    # Calculate uptime percentage
+    total_uptime = timedelta(0)
+    total_downtime = timedelta(0)
+
+    if len(filtered_datetimes) > 1:
+        for i in range(1, len(filtered_datetimes)):
+            interval = filtered_datetimes[i] - filtered_datetimes[i-1]
+            if filtered_statuses[i-1] == 1:
+                total_uptime += interval
+            else:
+                total_downtime += interval
+
+        # Include the last interval up to the end_datetime
+        if filtered_statuses[-1] == 1:
+            total_uptime += end_datetime - filtered_datetimes[-1]
+        else:
+            total_downtime += end_datetime - filtered_datetimes[-1]
+
+        total_time = total_uptime + total_downtime
+        uptimePercent = (total_uptime / total_time) * 100 if total_time > timedelta(0) else 0.0
+    else:
+        uptimePercent = 100.0 if len(filtered_statuses) > 0 and filtered_statuses[0] == 1 else 0.0
 
     ax.clear()  # clear the existing plot
 
@@ -127,6 +162,19 @@ def plot_line_graph():
 
     # Update the Tkinter canvas with the new figure
     fig_canvas.draw()
+
+    # Update the faults label
+    faults_label.config(text="faults in period: " + str(faultsNo) + " (see datetimes below)")
+
+    # Update the uptime label
+    uptime_label.config(text=f"uptime in period: {uptimePercent:.2f}%")
+
+    # Update the fault times in the scrolled text widget
+    faults_scrolled_text.config(state=NORMAL)  # Enable editing
+    faults_scrolled_text.delete(1.0, END)  # Clear current content
+    for fault_time in fault_times:
+        faults_scrolled_text.insert(END, fault_time + "\n")
+    faults_scrolled_text.config(state=DISABLED)  # Disable editing
 
 def print_entries_from_pickle():
     try:
@@ -162,10 +210,6 @@ def set_datetime_fields(*args):
     end_datetime_entry.delete(0, END)
     end_datetime_entry.insert(0, "current time")
     
-# Initialize the last accepted datetime values
-last_accepted_start = (datetime.now() - timedelta(weeks=1)).strftime("%Y-%m-%d %H:%M:%S")
-last_accepted_end = "current time"
-
 def validate_and_plot():
     global last_accepted_start, last_accepted_end
     try:
@@ -201,46 +245,78 @@ runningFlag = False
 # create window
 window = tk.Tk()
 window.title("fSpectrum")
-window.geometry("500x750")
+window.geometry("1000x750")
 
-# header text
-header_canvas = Canvas(window, width=500, height=60)
-header_canvas.create_text(250, 15, text="fSpectrum", fill="black", font=('Helvetica 15 bold'))
-header_canvas.pack()
+# Title across the top
+title_label = Label(window, text="fSpectrum", font=('Helvetica 15 bold'))
+title_label.grid(row=0, column=0, columnspan=2, pady=10)
 
+# Create a frame for the left content
+left_frame = Frame(window, width=500)
+left_frame.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
+left_frame.grid_propagate(False)  # Prevent the frame from resizing
+
+# Create a frame for the right content (blank for now)
+right_frame = Frame(window)
+right_frame.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
+
+# Make the grid cells expand proportionally
+window.grid_columnconfigure(0, weight=1)
+window.grid_columnconfigure(1, weight=2)
+window.grid_rowconfigure(1, weight=1)
+
+# ----- LEFT FRAME -----
 # slider text
-slider_label = Label(window, text="adjust slider to set ping frequency (minutes)", font=('Helvetica 10 bold'))
+slider_label = Label(left_frame, text="adjust slider to set ping frequency (minutes)", font=('Helvetica 10 bold'))
 slider_label.pack()
 
 # slider (ping frequency input)
-slider = Scale(window, from_=1, to=120, orient=HORIZONTAL, length=400, command=get_slider)
+slider = Scale(left_frame, from_=1, to=120, orient=HORIZONTAL, length=400, command=get_slider)
 slider.set(sliderVal)  # set default value
 slider.pack()
 
 # start button
-start_button = tk.Button(window, text=btnLabel, command=start_function)
+start_button = tk.Button(left_frame, text=btnLabel, command=start_function)
 start_button.pack()
 
 # status indicator
-status_canvas = Canvas(window, width=300, height=16, bg="#cc3333")
+status_canvas = Canvas(left_frame, width=300, height=16, bg="#cc3333")
 statusText = status_canvas.create_text(150, 10, text="current internet status: ", fill="white", font=('Helvetica 10 bold'))
 status_canvas.pack()
 
+# ----- RIGHT FRAME -----
+# subheader
+statistics_label = Label(right_frame, text="statistics", font=('Helvetica 10 bold'))
+statistics_label.pack()
+
+# faults label and text
+faults_label = Label(right_frame, text="faults in period: " + str(faultsNo) + " (see datetimes below)", font=('Helvetica 10'))
+faults_label.pack()
+
+
+# ScrolledText widget to display fault times
+faults_scrolled_text = ScrolledText(right_frame, width=40, height=10, state=DISABLED)
+faults_scrolled_text.pack(padx=10, pady=10, fill=X)
+
+# uptime label and text
+uptime_label = Label(right_frame, text=f"uptime in period: {uptimePercent:.2f}%", font=('Helvetica 10'))
+uptime_label.pack()
+
 # ----- DATA VISUALIZATION ----------------------------------------------------
 # header
-canvas2 = Canvas(window, width=500, height=20)
+canvas2 = Canvas(left_frame, width=480, height=20)
 canvas2.pack()
 
 # Create a figure and axis for the plot
 fig, ax = plt.subplots(figsize=(6, 4), dpi=100, facecolor="#f0f0f0")
 
 # Create a Tkinter canvas and display the figure on it
-fig_canvas = FigureCanvasTkAgg(fig, master=window)
+fig_canvas = FigureCanvasTkAgg(fig, master=left_frame)
 fig_canvas.draw()
 fig_canvas.get_tk_widget().pack()
 
 # Frame for datetime inputs
-datetime_frame = Frame(window)
+datetime_frame = Frame(left_frame)
 datetime_frame.pack()
 
 # Drop-down menu for time range options
