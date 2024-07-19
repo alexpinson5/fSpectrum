@@ -14,6 +14,7 @@ Packages used:
 * datetime
 * matplotlib
 * pickle
+
 (note that this program checks for installed packages and will install the necessary packages if they are not found)
 
 ### Installing
@@ -29,7 +30,7 @@ python.exe fSpectrum.py
 
 ## Authors
 Alex Pinson
-[@pnsn_engineering](https://instagram.com/pnsn_engineering)
+[@pnsn.engineering](https://instagram.com/pnsn.engineering)
 
 ## Version History
 * 0.1.0
