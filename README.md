@@ -40,6 +40,8 @@ Alex Pinson
 ## Version History
 * 0.1.0
     * Initial Release
+* 0.1.1
+   * Updated the ping URL in `check_connection.py` to Google's generate_204 endpoint (which is explicitly intented for network status checks)
 
 ## License
 This project is licensed under the GNU GPL v3.0 License - see the LICENSE.md file for details
